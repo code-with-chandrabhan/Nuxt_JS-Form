@@ -12,11 +12,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// Define the type for data sources
+// Define the DataSource interface
 interface DataSource {
-  id: string; // Assuming id is a string, change to number if needed
+  id: number;
   name: string;
   type: string;
+}
+
+// Define the type for itemsData
+interface ItemData {
+  item: string;
+  name: string;
+  rule: string;
+  description: string;
 }
 
 // Router for navigation
@@ -27,20 +35,24 @@ const dataSources = ref<DataSource[]>([]);
 
 // State to control visibility
 const showInputBox = ref(false);
+
 // Add these refs for form data
 const itemName = ref("");
 const itemRule = ref("");
 const itemDescription = ref("");
-const itemsData = ref([]);
+
+// Initialize itemsData with a defined type
+const itemsData = ref<ItemData[]>([]);
+
 // Add submit handler
 const handleSubmit = () => {
   // Initialize array with empty data for all 5 items
   if (itemsData.value.length === 0) {
     const initialData = Array.from({ length: 5 }, (_, i) => ({
-      item: `itme${i + 1}`,
-      name: '',
-      rule: '',
-      description: ''
+      item: `item${i + 1}`,
+      name: "",
+      rule: "",
+      description: "",
     }));
     itemsData.value = initialData;
   }
@@ -49,21 +61,22 @@ const handleSubmit = () => {
   const currentIndex = parseInt(currentItem.value) - 1;
   if (currentIndex >= 0 && currentIndex < 5) {
     itemsData.value[currentIndex] = {
-      item: `itme${currentItem.value}`,
-      name: itemName.value || 'amit',
-      rule: itemRule.value || 'follow traffic',
-      description: itemDescription.value || 'hello world'
+      item: `item${currentItem.value}`,
+      name: itemName.value || "amit",
+      rule: itemRule.value || "follow traffic",
+      description: itemDescription.value || "hello world",
     };
   }
-  
+    //console..
   console.log(JSON.stringify(itemsData.value));
-  
+
   // Clear form and return to list
-  itemName.value = '';
-  itemRule.value = '';
-  itemDescription.value = '';
+  itemName.value = "";
+  itemRule.value = "";
+  itemDescription.value = "";
   showInputBox.value = false;
 };
+
 // Current item name
 const currentItem = ref("");
 
@@ -76,6 +89,7 @@ const toggleInputBox = () => {
 const updateCurrentItem = (itemName: string) => {
   currentItem.value = itemName;
 };
+
 onMounted(async () => {
   if (!localStorage.getItem("accessToken")) {
     router.push("/");
@@ -116,18 +130,33 @@ const handleLogout = () => {
       <!-- Left side form -->
       <div class="bg-white w-80 p-4 shadow-md rounded">
         <div class="flex items-center mb-4">
-          <button v-if="showInputBox" class="text-lg mr-4" @click="toggleInputBox">←</button>
-          <h3 class="text-xl font-bold">{{ showInputBox ? `item ${currentItem}` : 'List of items' }}</h3>
+          <button
+            v-if="showInputBox"
+            class="text-lg mr-4"
+            @click="toggleInputBox"
+          >
+            ←
+          </button>
+          <h3 class="text-xl font-bold">
+            {{ showInputBox ? `item ${currentItem}` : "List of items" }}
+          </h3>
         </div>
         <!-- List view -->
         <div v-if="!showInputBox">
-          <p class="mt-2 text-lg cursor-pointer hover:bg-gray-100 p-2" 
-            v-for="n in 5" 
+          <p
+            class="mt-2 text-lg cursor-pointer hover:bg-gray-100 p-2"
+            v-for="n in 5"
             :key="n"
-            @click="() => { updateCurrentItem(n.toString()); toggleInputBox(); }">
+            @click="
+              () => {
+                updateCurrentItem(n.toString());
+                toggleInputBox();
+              }
+            "
+          >
             item{{ n }}
           </p>
-          <button 
+          <button
             @click="handleSubmit"
             class="w-full bg-black hover:bg-gray-600 text-white px-4 py-2 rounded mt-4"
           >
@@ -185,7 +214,7 @@ const handleLogout = () => {
         </Table>
       </div>
     </div>
-    
+
     <!-- Logout button at bottom -->
     <div class="p-4 border-t">
       <Button
