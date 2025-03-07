@@ -12,9 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// Define the type for data sources
+// Define the data sources
 interface DataSource {
-  id: string; // Assuming id is a string, change to number if needed
+  id: string;
   name: string;
   type: string;
 }
@@ -24,13 +24,13 @@ const router = useRouter();
 // Store data with a defined type
 const dataSources = ref<DataSource[]>([]);
 
-// State to control visibility
+// control visibility
 const showInputBox = ref(false);
-// Add these refs for form data
+
 const itemName = ref("");
 const itemRule = ref("");
 const itemDescription = ref("");
-// Add this interface at the top of the script
+
 interface ItemData {
   item: string;
   name: string;
@@ -41,19 +41,6 @@ interface ItemData {
 // Update the itemsData ref declaration
 const itemsData = ref<ItemData[]>([]);
 
-// Then in handleSubmit function, replace the type casting with:
-if (itemsData.value.length === 0) {
-  const initialData: ItemData[] = Array.from({ length: 5 }, (_, i) => ({
-    item: `itme${i + 1}`,
-    name: ``,
-    rule: ``,
-    description: ``
-  }));
-  itemsData.value = initialData;
-}
-// Add submit handler
-// Modify the handleSubmit function
-// Add this new function for submit button
 const handleFinalSubmit = () => {
   if (itemsData.value.length === 0) {
     alert("Please save some items first");
@@ -62,9 +49,7 @@ const handleFinalSubmit = () => {
   console.log(JSON.stringify(itemsData.value, null, 2));
 };
 
-// Modify handleSubmit to remove console.log
 const handleSubmit = () => {
-  // Initialize array with empty data for all 5 items if not already initialized
   if (itemsData.value.length === 0) {
     const initialData = Array.from({ length: 5 }, (_, i) => ({
       item: `itme${i + 1}`,
@@ -72,18 +57,12 @@ const handleSubmit = () => {
       rule: ``,
       description: ``,
     }));
-    itemsData.value = initialData as {
-      item: string;
-      name: string;
-      rule: string;
-      description: string;
-    }[];
+    itemsData.value = initialData;
   }
 
   // Update the current item's data
   const currentIndex = parseInt(currentItem.value) - 1;
   if (currentIndex >= 0 && currentIndex < 5) {
-    // Check if the current item is not item1 and if the values are already used by item1
     if (currentIndex !== 0) {
       const item1Data = itemsData.value[0];
       if (
@@ -105,19 +84,20 @@ const handleSubmit = () => {
     };
   }
 
-  // Clear form and return to list
+  // Clear form return to list
   itemName.value = "";
   itemRule.value = "";
   itemDescription.value = "";
   showInputBox.value = false;
 };
-// Keep only the JavaScript code
+
 const currentItem = ref("");
 
 // Toggle input box visibility and items
 const toggleInputBox = () => {
   showInputBox.value = !showInputBox.value;
 };
+
 
 // Update current item name
 const updateCurrentItem = (itemName: string) => {
@@ -138,6 +118,7 @@ onMounted(async () => {
         },
       }
     );
+
     dataSources.value = response.data;
   } catch (error) {
     console.error("Error fetching data sources:", error);
@@ -145,22 +126,24 @@ onMounted(async () => {
   }
 
   // Replace '/logout'
-  window.history.replaceState(null, "", "/logout");
+  // window.history.replaceState(null, "", "/detail");
 });
 
 // Handle logout
-const handleLogout = () => {
+const handleDetail = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
 
   router.push("/");
 };
+
+
 </script>
 
 <template>
   <div class="flex flex-col min-h-screen">
     <div class="flex gap-8 flex-1 p-8">
-      <!-- Left side form -->
+      <!-- Left form -->
       <div class="bg-white w-80 p-4 shadow-md rounded">
         <div class="flex items-center mb-4">
           <button
@@ -175,9 +158,9 @@ const handleLogout = () => {
           </h3>
         </div>
         <!-- List view -->
-        <!-- Update the List view section in template -->
+        <!-- Update the List -->
         <div v-if="!showInputBox">
-          <p
+          <p 
             class="mt-2 text-lg cursor-pointer hover:bg-gray-100 p-2"
             v-for="n in 5"
             :key="n"
@@ -186,9 +169,9 @@ const handleLogout = () => {
                 updateCurrentItem(n.toString());
                 toggleInputBox();
               }
-            "
+            " 
           >
-            item{{ n }}
+           items {{ n }}
           </p>
           <button
             @click="handleFinalSubmit"
@@ -234,7 +217,7 @@ const handleLogout = () => {
           </button>
         </div>
       </div>
-      <!-- Right side table -->
+      <!-- Right table -->
       <div class="bg-white p-4 shadow-md rounded flex-1">
         <Table>
           <TableHeader>
@@ -255,11 +238,11 @@ const handleLogout = () => {
       </div>
     </div>
 
-    <!-- Logout button at bottom -->
+    <!-- Logout button -->
     <div class="p-4 border-t">
       <Button
         type="button"
-        @click="handleLogout"
+        @click="handleDetail"
         class="bg-black hover:bg-gray-700 text-white px-6 py-2 rounded"
       >
         Logout

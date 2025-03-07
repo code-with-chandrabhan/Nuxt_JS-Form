@@ -82,7 +82,7 @@ const onSubmit = form.handleSubmit(async (values) => {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
 
-    router.push("/logout");
+    router.push("/detail");
   } catch (error) {
     // Handle errors
     if (axios.isAxiosError(error) && error.response) {
